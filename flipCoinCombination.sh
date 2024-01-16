@@ -1,109 +1,122 @@
 #!/bin/bash
-#Function to simulate Heads or Tails and store the result of toss in the dictionary 
-declare -A myDictionary
-flip_coin(){
-	for ((i=0; i<10; i++)); do 
-	    checkHeadsorTails=$((RANDOM%2)) 
-	    if [ $checkHeadsorTails -eq 1 ]; then
-		result="Heads"
-	    else 
-		result="Tails"
+
+#Function to simulate Singlet Combination and store the result of toss in the dictionary
+declare -A Singlet
+flip_coin(){    
+        for ((i=0; i<10; i++)); do
+            checkHeadsorTails=$((RANDOM%2))
+            if [ $checkHeadsorTails -eq 1 ]; then
+                result="Heads"     
+            else
+                result="Tails"
             fi
-	    myDictionary["$i"]=$result
+            Singlet["$i"]=$result
         done
 }
 flip_coin
-
-#Displaying the Dictionary Elements
-echo "Dictionary Elements:"
-for key in "${!myDictionary[@]}"; do
-    echo "$key: ${myDictionary[$key]}"
+            
+# Displaying the Dictionary Elements
+echo "Singlet Combination:"
+for ((i=0; i<${#Singlet[@]}; i++)); do
+    echo "$i: ${Singlet[$i]}"
 done
 
-#Finding the percentage of the Singlet Combination
-h=0
-t=0
-for key in "${!myDictionary[@]}"; do 
-	if [ "${myDictionary[$key]}" == "Heads" ]; then 
-	    ((h++)) 
-	else 
-	    ((t++)) 
-	fi 
+
+#Sorting the Singlet Combinations
+SortedSinglet=($(for element in "${Singlet[@]}"; do echo "$element"; done | sort))
+
+# Displaying the Sorted Singlet Combinations
+echo "Sorted Singlet Elements:"
+for ((i=0; i<${#SortedSinglet[@]}; i++)); do
+    echo "$i: ${SortedSinglet[$i]}"
 done
-length=${#myDictionary[@]}
-percentage=$(( (h * 100) / $length ))
-percentage2=$(( (t * 100) / $length ))
 
-# Print the result
-echo "The percentage of Singlet Heads is: $percentage%"
-echo "The percentage of Singlet Tails is: $percentage2%"
+# Finding the winning Singlet Combination
+winning_combination=$(printf "%s\n" "${Singlet[@]}" | sort | uniq -c | sort -nr | head -n 1 | awk '{print $2}')
+                
+# Display the winning combination
+echo "The winning Singlet Combination is: $winning_combination"
+                
+# Count occurrences of each Singlet Combination
+declare -A counts
+for key in "${Singlet[@]}"; do
+    ((counts["$key"]++))
+done
 
-#Function to simulate doublet combination
+# Calculate and print the percentages
+length=${#Singlet[@]}
+for key in "${!counts[@]}"; do
+    percentage=$(( (counts["$key"] * 100) / length ))
+    echo "The percentage of Singlet $key is: $percentage%"
+done
+
+#Function to simulate Doublet Combination and store the result of toss in the dictionary
 declare -A Doublet
 flip_coin1(){
-	for ((i=0; i<=10; i++)); do
-		firsttoss=$((RANDOM%2))
-		secondtoss=$((RANDOM%2))
-		if [[ $firsttoss -eq 1 && secondtoss -eq 1 ]]; then
-			result="HH"
-		elif [[ $firsttoss -eq 1 && secondtoss -eq 0 ]]; then
-			result="HT"
-		elif [[ $firsttoss -eq 0 && secondtoss -eq 1 ]]; then
+         for ((i=0; i<10; i++)); do
+                firsttoss=$((RANDOM%2))
+                secondtoss=$((RANDOM%2)) 
+                if [[ $firsttoss -eq 1 && secondtoss -eq 1 ]]; then
+                        result="HH"
+                elif [[ $firsttoss -eq 1 && secondtoss -eq 0 ]]; then
+                        result="HT"
+                elif [[ $firsttoss -eq 0 && secondtoss -eq 1 ]]; then
                         result="TH"
-		else
+                else
                         result="TT"
-		fi
-		Doublet["$i"]=$result
-	done
+                fi
+                Doublet["$i"]=$result
+        done
 }
 flip_coin1
-
-#Displaying the Dictionary Elements
-echo "Dictionary Elements:"
-for key in "${!Doublet[@]}"; do
-    echo "$key: ${Doublet[$key]}"
+          
+# Displaying the Dictionary Elements
+echo "Doublet Combination:"
+for ((i=0; i<${#Doublet[@]}; i++)); do
+    echo "$i: ${Doublet[$i]}"
 done
 
-#Finding the percentage for Doublet Combination
-hh=0
-ht=0
-th=0
-tt=0
-for key in "${!Doublet[@]}"; do
-        if [ "${Doublet[$key]}" == "HH" ]; then
-            ((hh++))
-        elif [ "${Doublet[$key]}" == "HT" ]; then
-            ((ht++))
-	elif [ "${Doublet[$key]}" == "TH" ]; then
-            ((th++))
-	else
-	    ((tt++))
-        fi
+
+#Sorting the Doublet Combinations
+SortedDoublet=($(for element in "${Doublet[@]}"; do echo "$element"; done | sort))
+
+# Displaying the Sorted Doublet Combinations
+echo "Sorted Doublet Elements:"
+for ((i=0; i<${#SortedDoublet[@]}; i++)); do
+    echo "$i: ${SortedDoublet[$i]}"
 done
+                
+# Finding the winning Doublet Combination
+winning_combination1=$(printf "%s\n" "${SortedDoublet[@]}" | sort | uniq -c | sort -nr | head -n 1 | awk '{print $2}')
+                
+# Display the winning combination  
+echo "The winning Doublet Combination is: $winning_combination1"
+                        
+# Count occurrences of each doublet combination
+declare -A counts1
+for key in "${Doublet[@]}"; do
+    ((counts1["$key"]++))
+done
+
+# Calculate and print the percentages
 length1=${#Doublet[@]}
-percentage_hh=$(( (hh * 100) / $length1 ))
-percentage_ht=$(( (ht * 100) / $length1 ))
-percentage_th=$(( (th * 100) / $length1 ))
-percentage_tt=$(( (tt * 100) / $length1 ))
+for key in "${!counts1[@]}"; do
+    percentage=$(( (counts1["$key"] * 100) / length1 ))
+    echo "The percentage of Doublet $key is: $percentage%"
+done
 
-#Print the result
-echo "The percentage of Doublet HH is: $percentage_hh%"
-echo "The percentage of Doublet HT is: $percentage_ht%"
-echo "The percentage of Doublet TH is: $percentage_th%"
-echo "The percentage of Doublet TT is: $percentage_tt%"
-
-#Function to simulate Triplet Combination
+#Function to simulate Triplet Combination and store the result of toss in the dictionary
 declare -A Triplet
 flip_coin2(){
-	for ((i=0; i<10; i++)); do
-		firsttoss1=$((RANDOM%2))
-		secondtoss1=$((RANDOM%2))
-		thirdtoss=$((RANDOM%2))
-		if [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 1 && $thirdtoss -eq 1 ]]; then
-			result="HHH"
-		elif [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 1 && $thirdtoss -eq 0 ]]; then
-			result="HHT"
-		elif [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 0 && $thirdtoss -eq 1 ]]; then
+        for ((i=0; i<10; i++)); do
+                firsttoss1=$((RANDOM%2))
+                secondtoss1=$((RANDOM%2))
+                thirdtoss=$((RANDOM%2))
+                if [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 1 && $thirdtoss -eq 1 ]]; then
+                        result="HHH"
+                elif [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 1 && $thirdtoss -eq 0 ]]; then
+                        result="HHT"
+                elif [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 0 && $thirdtoss -eq 1 ]]; then
                         result="HTH"
                 elif [[ $firsttoss1 -eq 1 && $secondtoss1 -eq 0 && $thirdtoss -eq 0 ]]; then
                         result="HTT"
@@ -113,63 +126,45 @@ flip_coin2(){
                         result="THT"
                 elif [[ $firsttoss1 -eq 0 && $secondtoss1 -eq 0 && $thirdtoss -eq 1 ]]; then
                         result="TTH"
-		else
+                else
                         result="TTT"
-		fi
-		Triplet["$i"]=$result
-	done
+                fi
+                Triplet["$i"]=$result
+        done
 }
 flip_coin2
 
-#Displaying the Dictionary Elements
-for key in "${!Triplet[@]}"; do
-    echo "$key: ${Triplet[$key]}"
+# Displaying the Dictionary Elements
+echo "Triplet Combination:"
+for ((i=0; i<${#Triplet[@]}; i++)); do
+    echo "$i: ${Triplet[$i]}"
 done
 
-#Finding the percentage for Doublet Combination
-hhh=0
-hht=0          
-hth=0
-htt=0
-thh=0
-tht=0
-tth=0
-ttt=0
-for key in "${!Triplet[@]}"; do
-        if [ "${Triplet[$key]}" == "HHH" ]; then
-            ((hhh++))
-        elif [ "${Triplet[$key]}" == "HHT" ]; then
-            ((hht++))
-        elif [ "${Triplet[$key]}" == "HTH" ]; then
-            ((hth++))
-        elif [ "${Triplet[$key]}" == "HTT" ]; then
-            ((htt++))
-        elif [ "${Triplet[$key]}" == "THH" ]; then
-            ((thh++))
-        elif [ "${Triplet[$key]}" == "THT" ]; then
-            ((tht++))
-        elif [ "${Triplet[$key]}" == "TTH" ]; then
-            ((tth++))
-        else
-            ((ttt++))
-        fi
+
+#Sorting the Triplet Combinations
+SortedTriplet=($(for element in "${Triplet[@]}"; do echo "$element"; done | sort))
+
+# Displaying the Sorted Doublet Combinations
+echo "Sorted Triplet Elements:"
+for ((i=0; i<${#SortedTriplet[@]}; i++)); do
+    echo "$i: ${SortedTriplet[$i]}"
 done
+                
+# Finding the winning Triplet Combination
+winning_combination2=$(printf "%s\n" "${SortedTriplet[@]}" | sort | uniq -c | sort -nr | head -n 1 | awk '{print $2}')
+                
+# Display the winning combination  
+echo "The winning Triplet Combination is: $winning_combination2"
+
+# Count occurrences of each Triplet Combination
+declare -A counts2
+for key in "${Triplet[@]}"; do
+    ((counts2["$key"]++))
+done
+
+# Calculate and print the percentages
 length2=${#Triplet[@]}
-percentage_hhh=$(( (hhh * 100) / $length2 ))
-percentage_hht=$(( (hht * 100) / $length2 ))
-percentage_hth=$(( (hth * 100) / $length2 ))
-percentage_htt=$(( (htt * 100) / $length2 ))
-percentage_thh=$(( (thh * 100) / $length2 ))
-percentage_tht=$(( (tht * 100) / $length2 ))
-percentage_tth=$(( (tth * 100) / $length2 ))
-percentage_ttt=$(( (ttt * 100) / $length2 ))
-
-#Print the result
-echo "The percentage of Triplet HHH is: $percentage_hhh%"
-echo "The percentage of Triplet HHT is: $percentage_hht%"
-echo "The percentage of Triplet HTH is: $percentage_hth%"
-echo "The percentage of Triplet HTT is: $percentage_htt%"
-echo "The percentage of Triplet THH is: $percentage_thh%"
-echo "The percentage of Triplet THT is: $percentage_tht%"
-echo "The percentage of Triplet TTH is: $percentage_tth%"
-echo "The percentage of Triplet TTT is: $percentage_ttt%"
+for key in "${!counts2[@]}"; do
+    percentage=$(( (counts2["$key"] * 100) / length2 ))
+    echo "The percentage of Triplet $key is: $percentage%"
+done
